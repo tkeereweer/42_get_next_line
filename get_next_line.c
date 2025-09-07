@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line3.c                                   :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 18:13:12 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/09/07 11:20:56 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/09/07 12:40:46 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ void	ft_strncat(char *dst, char *src, size_t n)
 
 	i = 0;
 	j = 0;
+	if (src == (void *) 0)
+		return ;
 	while (dst[i] != '\0')
 		i++;
 	while (src[j] != '\0' && j < n)
@@ -85,7 +87,8 @@ char	*ft_realloc(char *ptr, size_t size)
 	if (out == (void *) 0)
 		return (out);
 	ft_strcpy(out, ptr);
-	free(ptr);
+	if (ptr != (void *) 0)
+		free(ptr);
 	return (out);
 }
 
@@ -111,25 +114,16 @@ char	*get_next_line(int fd)
 	static char	*line;
 	int			cnt;
 
+	if (fd < 0)
+		return ((void *) 0);
 	out = (char *) malloc(1);
 	if (out == (void *) 0)
 		return (out);
 	line = ft_realloc(line, BUFFER_SIZE + 1);
 	if (line == (void *) 0)
 		return (line);
-	out[0] = '\0';
 	cnt = -2;
-	while (eol_found(line) != -1)
-	{
-		out = ft_realloc(out, ft_strlen(out) + ft_strlen(line) + 1);
-		if (out == (void *) 0)
-			return (out);
-		out[0] = '\0';
-		ft_strncat(out, line, eol_found(line) + 1);
-		ft_strcpy(line, &line[eol_found(line) + 1]);
-		return out;
-	}
-	while (cnt != 0)
+	while (cnt != 0 && cnt != -1)
 	{
 		if (eol_found(line) != -1)
 		{
@@ -147,7 +141,9 @@ char	*get_next_line(int fd)
 		cnt = read(fd, line, BUFFER_SIZE);
 		line[cnt] = '\0';
 	}
-	return out;
+	if (ft_strlen(out) == 0)
+		return ((void *) 0);
+	return (out);
 }
 
 // int	main(void)
