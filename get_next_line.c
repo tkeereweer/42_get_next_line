@@ -1,50 +1,164 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line2.c                                   :+:      :+:    :+:   */
+/*   get_next_line3.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/04 13:36:50 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/09/05 09:46:08 by mkeerewe         ###   ########.fr       */
+/*   Created: 2025/09/06 18:13:12 by mkeerewe          #+#    #+#             */
+/*   Updated: 2025/09/07 11:20:56 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
+size_t	ft_strlen(const char *s)
+{
+	size_t	i;
+
+	i = 0;
+	if (s == (void *) 0)
+		return (0);
+	while (s[i] != '\0')
+	{
+		i++;
+	}
+	return (i);
+}
+
+void	ft_putstr_fd(char *s, int fd)
+{
+	if (s != (void *) 0)
+		write(fd, s, ft_strlen(s));
+}
+
+// void	ft_strncpy(char *dst, char *src, size_t n)
+// {
+// 	size_t	i;
+
+// 	i = 0;
+// 	while (src[i] != '\0' && i < n)
+// 	{
+// 		dst[i] = src[i];
+// 		i++;
+// 	}
+// 	dst[i] = '\0';
+// }
+
+void	ft_strcpy(char *dst, char *src)
+{
+	size_t	i;
+
+	i = 0;
+	if (src == (void *) 0)
+		return ;
+	while (src[i] != '\0')
+	{
+		dst[i] = src[i];
+		i++;
+	}
+	dst[i] = '\0';
+}
+
+void	ft_strncat(char *dst, char *src, size_t n)
+{
+	size_t	i;
+	size_t	j;
+
+	i = 0;
+	j = 0;
+	while (dst[i] != '\0')
+		i++;
+	while (src[j] != '\0' && j < n)
+	{
+		dst[i + j] = src[j];
+		j++;
+	}
+	dst[i + j] = '\0';
+}
+
+char	*ft_realloc(char *ptr, size_t size)
+{
+	char	*out;
+	
+	out = (char *) malloc(size);
+	if (out == (void *) 0)
+		return (out);
+	ft_strcpy(out, ptr);
+	free(ptr);
+	return (out);
+}
+
+int	eol_found(char *line)
+{
+	int	i;
+
+	i = 0;
+	if (line == (void *) 0)
+		return (-1);
+	while (line[i] != '\0')
+	{
+		if (line[i] == '\n')
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
 char	*get_next_line(int fd)
 {
-	char	*line;
-	char	*last_char;
-	int		cnt;
+	char		*out;
+	static char	*line;
+	int			cnt;
 
-	line = (char *) malloc(BUFFER_SIZE);
+	out = (char *) malloc(1);
+	if (out == (void *) 0)
+		return (out);
+	line = ft_realloc(line, BUFFER_SIZE + 1);
 	if (line == (void *) 0)
 		return (line);
-	last_char = (char *) malloc(2 * sizeof(char));
-	if (last_char == (void *) 0)
-		return (last_char);
-	last_char[0] = 'a';
+	out[0] = '\0';
 	cnt = -2;
-	while (cnt != 0 && cnt != -1 && last_char[0] != '\n')
+	while (eol_found(line) != -1)
 	{
-		cnt = read(fd, last_char, 1);
-		last_char[1] = '\0';
-		if (cnt != 0 && cnt != -1)
-			ft_strlcat(line, last_char, BUFFER_SIZE);
+		out = ft_realloc(out, ft_strlen(out) + ft_strlen(line) + 1);
+		if (out == (void *) 0)
+			return (out);
+		out[0] = '\0';
+		ft_strncat(out, line, eol_found(line) + 1);
+		ft_strcpy(line, &line[eol_found(line) + 1]);
+		return out;
 	}
-	return (line);
+	while (cnt != 0)
+	{
+		if (eol_found(line) != -1)
+		{
+			out = ft_realloc(out, ft_strlen(out) + ft_strlen(line) + 1);
+			if (out == (void *) 0)
+				return (out);
+			ft_strncat(out, line, eol_found(line) + 1);
+			ft_strcpy(line, &line[eol_found(line) + 1]);
+			return out;
+		}
+		out = ft_realloc(out, ft_strlen(out) + ft_strlen(line) + 1);
+		if (out == (void *) 0)
+			return (out);
+		ft_strncat(out, line, ft_strlen(line));
+		cnt = read(fd, line, BUFFER_SIZE);
+		line[cnt] = '\0';
+	}
+	return out;
 }
 
-int	main(void)
-{
-	int	fd;
+// int	main(void)
+// {
+// 	int	fd;
 
-	fd = open("test.txt", O_RDONLY);
-	if (fd == -1)
-		return (1);
-	ft_putstr_fd(get_next_line(fd), 1);
-	ft_putstr_fd(get_next_line(fd), 1);
-	close(fd);
-	return (0);
-}
+// 	fd = open("test.txt", O_RDONLY);
+// 	if (fd == -1)
+// 		return (1);
+// 	ft_putstr_fd(get_next_line(fd), 1);
+// 	ft_putstr_fd(get_next_line(fd), 1);
+// 	close(fd);
+// 	return (0);
+// }
