@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 18:13:12 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/09/07 13:05:49 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/09/20 14:56:14 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,21 +40,28 @@ static char	*return_line(char *out, char *line)
 
 char	*get_next_line(int fd)
 {
-	char		*out;
-	static char	*line;
-	int			cnt;
+	char			*out;
+	static char		*line;
+	int				cnt;
 
-	out = (void *) 0;
-	line = ft_realloc(line, BUFFER_SIZE + 1);
-	if (line == (void *) 0)
-		return (line);
-	cnt = -2;
+	if (line == 0)
+	{
+		line = ft_realloc(line, BUFFER_SIZE + 1);
+		if (line == (void *) 0)
+			return (line);
+		cnt = read(fd, line, BUFFER_SIZE);
+		line[cnt] = '\0';
+	}
+	else
+		cnt = -2;
+	out = (char *) malloc(1 * sizeof(char));
+	if (out == (void *) 0)
+		return (out);
+	out[0] = '\0';
 	while (cnt != 0 && cnt != -1)
 	{
 		if (eol_found(line) != -1)
-		{
 			return (return_line(out, line));
-		}
 		out = ft_realloc(out, ft_strlen(out) + ft_strlen(line) + 1);
 		if (out == (void *) 0)
 			return (out);
@@ -63,19 +70,22 @@ char	*get_next_line(int fd)
 		line[cnt] = '\0';
 	}
 	if (ft_strlen(out) == 0)
-		return ((void *) 0);
+	{
+		free(out);
+		out = (void *) 0;
+	}
 	return (out);
 }
 
-// int	main(void)
-// {
-// 	int	fd;
+int	main(void)
+{
+	int	fd;
 
-// 	fd = open("test.txt", O_RDONLY);
-// 	if (fd == -1)
-// 		return (1);
-// 	ft_putstr_fd(get_next_line(fd), 1);
-// 	ft_putstr_fd(get_next_line(fd), 1);
-// 	close(fd);
-// 	return (0);
-// }
+	fd = open("test.txt", O_RDONLY);
+	if (fd == -1)
+		return (1);
+	ft_putstr_fd(get_next_line(fd), 1);
+	ft_putstr_fd(get_next_line(fd), 1);
+	close(fd);
+	return (0);
+}

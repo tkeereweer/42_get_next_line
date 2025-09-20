@@ -1,4 +1,6 @@
 test.txt
+test2
+test
 *.dSYM
 gnlTester
-get_next_line2.c
+.vscode

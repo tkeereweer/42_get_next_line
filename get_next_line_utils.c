@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 18:23:30 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/09/07 13:05:36 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/09/20 14:57:27 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,11 @@ char	*ft_realloc(char *ptr, size_t size)
 
 	out = (char *) malloc(size);
 	if (out == (void *) 0)
+	{
+		if (ptr != (void *) 0)
+			free(ptr);
 		return (out);
+	}
 	ft_strcpy(out, ptr);
 	if (ptr != (void *) 0)
 		free(ptr);
