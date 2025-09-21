@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 18:23:30 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/09/20 14:57:27 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/09/21 16:28:13 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,6 @@ size_t	ft_strlen(const char *s)
 		i++;
 	}
 	return (i);
-}
-
-void	ft_putstr_fd(char *s, int fd)
-{
-	if (s != (void *) 0)
-		write(fd, s, ft_strlen(s));
 }
 
 void	ft_strcpy(char *dst, char *src)
@@ -81,4 +75,20 @@ char	*ft_realloc(char *ptr, size_t size)
 	if (ptr != (void *) 0)
 		free(ptr);
 	return (out);
+}
+
+int	eol_found(char *line)
+{
+	int	i;
+
+	i = 0;
+	if (line == (void *) 0)
+		return (-1);
+	while (line[i] != '\0')
+	{
+		if (line[i] == '\n')
+			return (i);
+		i++;
+	}
+	return (-1);
 }

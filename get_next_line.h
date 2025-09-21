@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/05 09:46:59 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/09/07 13:07:01 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/09/21 16:28:10 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,14 @@
 # include <stdlib.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 5
+#  define BUFFER_SIZE 10
 # endif
 
-void	ft_putstr_fd(char *s, int fd);
 size_t	ft_strlen(const char *s);
 void	ft_strcpy(char *dst, char *src);
 void	ft_strncat(char *dst, char *src, size_t n);
 char	*ft_realloc(char *ptr, size_t size);
+int		eol_found(char *line);
 char	*get_next_line(int fd);
 
 #endif
