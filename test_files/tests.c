@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 17:04:12 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/09/25 17:26:38 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/09/30 18:10:03 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,10 @@ int	main(int argc, char *argv[])
 {
 	int		fd;
 	char	*line;
+	char	c;
 
-	line = (char *) malloc(1);
-	line[0] = '\0';
+	c = 'a';
+	line = &c;
 	if (argc == 1)
 	{
 		while (line != (void *) 0)
@@ -35,8 +36,9 @@ int	main(int argc, char *argv[])
 	{
 		line = get_next_line(fd);
 		printf("%s", line);
+		free(line);
 	}
-	free(line);
+
 	close(fd);
 	return (0);
 }

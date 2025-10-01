@@ -6,7 +6,7 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 18:13:12 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/09/21 16:34:54 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/01 08:58:30 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,12 @@ static int	init_var(char **line, int fd, char **out, int mode)
 		if (*line == (void *) 0)
 			return (0);
 		cnt = read(fd, *line, BUFFER_SIZE);
-		line[0][cnt] = '\0';
+		if (cnt == -1)
+		{
+			free(line);
+			return (0);
+		}
+		(*line)[cnt] = '\0';
 		return (1);
 	}
 	else
@@ -35,9 +40,10 @@ static int	init_var(char **line, int fd, char **out, int mode)
 	}
 }
 
-static char	*ret_null(char *out)
+static char	*ret_null(char *line, char *out)
 {
 	free(out);
+	free(line);
 	out = (void *) 0;
 	return (out);
 }
@@ -71,10 +77,10 @@ char	*get_next_line(int fd)
 	static char		*line;
 	int				cnt;
 
-	if (line == 0)
+	if (line == (void *) 0)
 	{
 		if (init_var(&line, fd, (void *) 0, 0) == 0)
-			return (line);
+			return ((void *) 0);
 	}
 	cnt = -2;
 	if (init_var((void *) 0, fd, &out, 1) == 0)
@@ -86,7 +92,7 @@ char	*get_next_line(int fd)
 		cnt = read_line(&out, line, fd);
 	}
 	if (ft_strlen(out) == 0)
-		out = ret_null(out);
+		out = ret_null(line, out);
 	return (out);
 }
 

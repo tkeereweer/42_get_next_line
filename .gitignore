@@ -4,3 +4,4 @@ test
 *.dSYM
 gnlTester
 .vscode
+test_gnl
