@@ -6,44 +6,46 @@
 /*   By: mkeerewe <mkeerewe@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 18:13:12 by mkeerewe          #+#    #+#             */
-/*   Updated: 2025/10/01 08:58:30 by mkeerewe         ###   ########.fr       */
+/*   Updated: 2025/10/01 13:04:53 by mkeerewe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static int	init_var(char **line, int fd, char **out, int mode)
+static char	*init_var(char *line, int fd, char *out, int mode)
 {
 	int	cnt;
 
 	if (mode == 0)
 	{
-		*line = ft_realloc(*line, BUFFER_SIZE + 1);
-		if (*line == (void *) 0)
-			return (0);
-		cnt = read(fd, *line, BUFFER_SIZE);
-		if (cnt == -1)
+		line = ft_realloc(line, BUFFER_SIZE + 1);
+		if (line == (void *) 0)
+			return (line);
+		cnt = read(fd, line, BUFFER_SIZE);
+		if (cnt == -1 || cnt == 0)
 		{
 			free(line);
-			return (0);
+			line = (void *) 0;
 		}
-		(*line)[cnt] = '\0';
-		return (1);
+		else
+			line[cnt] = '\0';
+		return (line);
 	}
 	else
 	{
-		*out = (char *) malloc(1 * sizeof(char));
-		if (*out == (void *) 0)
-			return (0);
-		out[0][0] = '\0';
-		return (1);
+		out = (char *) malloc(1 * sizeof(char));
+		if (out == (void *) 0)
+			return (out);
+		out[0] = '\0';
+		return (out);
 	}
 }
 
-static char	*ret_null(char *line, char *out)
+static char	*ret_null(char **line, char *out)
 {
 	free(out);
-	free(line);
+	free(*line);
+	*line = (void *) 0;
 	out = (void *) 0;
 	return (out);
 }
@@ -67,7 +69,8 @@ static int	read_line(char **out, char *line, int fd)
 		return (-1);
 	ft_strncat(*out, line, ft_strlen(line));
 	cnt = read(fd, line, BUFFER_SIZE);
-	line[cnt] = '\0';
+	if (cnt != -1)
+		line[cnt] = '\0';
 	return (cnt);
 }
 
@@ -79,11 +82,14 @@ char	*get_next_line(int fd)
 
 	if (line == (void *) 0)
 	{
-		if (init_var(&line, fd, (void *) 0, 0) == 0)
+		line = init_var(line, fd, (void *) 0, 0);
+		if (line == (void *) 0)
 			return ((void *) 0);
 	}
 	cnt = -2;
-	if (init_var((void *) 0, fd, &out, 1) == 0)
+	out = (void *) 0;
+	out = init_var((void *) 0, fd, out, 1);
+	if (out == (void *) 0)
 		return (out);
 	while (cnt != 0 && cnt != -1)
 	{
@@ -91,20 +97,7 @@ char	*get_next_line(int fd)
 			return (return_line(out, line));
 		cnt = read_line(&out, line, fd);
 	}
-	if (ft_strlen(out) == 0)
-		out = ret_null(line, out);
+	if (ft_strlen(out) == 0 || cnt == -1)
+		out = ret_null(&line, out);
 	return (out);
 }
-
-// int	main(void)
-// {
-// 	int	fd;
-
-// 	fd = open("test.txt", O_RDONLY);
-// 	if (fd == -1)
-// 		return (1);
-// 	ft_putstr_fd(get_next_line(fd), 1);
-// 	ft_putstr_fd(get_next_line(fd), 1);
-// 	close(fd);
-// 	return (0);
-// }
